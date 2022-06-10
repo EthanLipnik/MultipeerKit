@@ -95,18 +95,22 @@ final class MultipeerConnection: NSObject, MultipeerProtocol {
     
     private lazy var advertiser: MCNearbyServiceAdvertiser = { makeAdvertiser() }()
 
-    func broadcast(_ data: Data) throws {
+    func broadcast(_ data: Data, mode: MCSessionSendDataMode) throws {
         guard !session.connectedPeers.isEmpty else {
             os_log("Not broadcasting message: no connected peers", log: self.log, type: .error)
             return
         }
 
-        try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+        try session.send(data, toPeers: session.connectedPeers, with: mode)
     }
 
-    func send(_ data: Data, to peers: [Peer]) throws {
+    func send(_ data: Data, to peers: [Peer], mode: MCSessionSendDataMode) throws {
         let ids = peers.map { $0.underlyingPeer }
-        try session.send(data, toPeers: ids, with: .reliable)
+        try session.send(data, toPeers: ids, with: mode)
+    }
+    
+    func send(_ url: URL, withName name: String, to peer: Peer, mode: MCSessionSendDataMode) {
+        session.sendResource(at: url, withName: name, toPeer: peer.underlyingPeer)
     }
 
     private var invitationCompletionHandlers: [MCPeerID: InvitationCompletionHandler] = [:]
@@ -172,6 +176,12 @@ extension MultipeerConnection: MCSessionDelegate {
 
     func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL?, withError error: Error?) {
         os_log("%{public}@", log: log, type: .debug, #function)
+        
+        if let peer = try? Peer(peer: peerID, discoveryInfo: nil), let localURL, let data = try? Data(contentsOf: localURL) {
+            didReceiveData?(data, peer)
+        } else {
+            os_log("Received resource, but cannot create peer for %s or no local url", log: log, type: .error, #function, peerID.displayName)
+        }
     }
 
 }

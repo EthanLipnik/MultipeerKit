@@ -1,4 +1,5 @@
 import Foundation
+import MultipeerConnectivity
 
 typealias PeerName = String
 
@@ -14,8 +15,9 @@ protocol MultipeerProtocol: AnyObject {
     func stop()
 
     func invite(_ peer: Peer, with context: Data?, timeout: TimeInterval, completion: InvitationCompletionHandler?)
-    func broadcast(_ data: Data) throws
-    func send(_ data: Data, to peers: [Peer]) throws
+    func broadcast(_ data: Data, mode: MCSessionSendDataMode) throws
+    func send(_ data: Data, to peers: [Peer], mode: MCSessionSendDataMode) throws
+    func send(_ url: URL, withName name: String, to peer: Peer, mode: MCSessionSendDataMode)
     
     func getLocalPeer() -> Peer?
 

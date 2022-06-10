@@ -24,11 +24,15 @@ final class MockMultipeerConnection: MultipeerProtocol {
         isRunning = false
     }
 
-    func broadcast(_ data: Data) throws {
+    func broadcast(_ data: Data, mode: MCSessionSendDataMode = .reliable) throws {
         didReceiveData?(data, localPeer)
     }
 
-    func send(_ data: Data, to peers: [Peer]) throws {
+    func send(_ data: Data, to peers: [Peer], mode: MCSessionSendDataMode = .reliable) throws {
+        
+    }
+    
+    func send(_ url: URL, withName name: String = "temp", to peer: Peer, mode: MCSessionSendDataMode = .reliable) {
         
     }
 

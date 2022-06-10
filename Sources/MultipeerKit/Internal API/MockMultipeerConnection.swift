@@ -9,6 +9,7 @@ final class MockMultipeerConnection: MultipeerProtocol {
     }()
 
     var didReceiveData: ((Data, Peer) -> Void)?
+    var didReceiveFile: ((URL, Peer) -> Void)?
     var didFindPeer: ((Peer) -> Void)?
     var didLosePeer: ((Peer) -> Void)?
     var didConnectToPeer: ((Peer) -> Void)?

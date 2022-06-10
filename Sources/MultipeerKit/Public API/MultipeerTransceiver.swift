@@ -94,6 +94,12 @@ public final class MultipeerTransceiver {
     public func receive<T: Codable>(_ type: T.Type, using closure: @escaping (_ payload: T, _ sender: Peer) -> Void) {
         MultipeerMessage.register(type, for: String(describing: type), closure: closure)
     }
+    
+    public func receive(_ closure: @escaping (_ url: URL, _ sender: Peer) -> Void) {
+        connection.didReceiveFile = { url, sender in
+            closure(url, sender)
+        }
+    }
 
     /// Resumes the transceiver, allowing this peer to be discovered and to discover remote peers.
     public func resume() {

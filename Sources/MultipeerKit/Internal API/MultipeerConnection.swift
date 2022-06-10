@@ -30,6 +30,7 @@ final class MultipeerConnection: NSObject, MultipeerProtocol {
     }
 
     var didReceiveData: ((Data, Peer) -> Void)?
+    var didReceiveFile: ((URL, Peer) -> Void)?
     var didFindPeer: ((Peer) -> Void)?
     var didLosePeer: ((Peer) -> Void)?
     var didConnectToPeer: ((Peer) -> Void)?
@@ -177,8 +178,8 @@ extension MultipeerConnection: MCSessionDelegate {
     func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL?, withError error: Error?) {
         os_log("%{public}@", log: log, type: .debug, #function)
         
-        if let peer = try? Peer(peer: peerID, discoveryInfo: nil), let localURL, let data = try? Data(contentsOf: localURL) {
-            didReceiveData?(data, peer)
+        if let peer = try? Peer(peer: peerID, discoveryInfo: nil), let localURL {
+            didReceiveFile?(localURL, peer)
         } else {
             os_log("Received resource, but cannot create peer for %s or no local url", log: log, type: .error, #function, peerID.displayName)
         }

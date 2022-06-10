@@ -6,6 +6,7 @@ typealias PeerName = String
 protocol MultipeerProtocol: AnyObject {
 
     var didReceiveData: ((Data, Peer) -> Void)? { get set }
+    var didReceiveFile: ((URL, Peer) -> Void)? { get set }
     var didFindPeer: ((Peer) -> Void)? { get set }
     var didLosePeer: ((Peer) -> Void)? { get set }
     var didConnectToPeer: ((Peer) -> Void)? { get set }
